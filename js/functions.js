@@ -26,7 +26,6 @@ function haeKirjastoja() {
 function addFavorite(id) {
     url = 'https://api.kirjastot.fi/v4/library?id=' + id;
     $.get(url, function (data, status) {
-        console.log(data);
         obj = data.items[0];
 
         if (localStorage.getItem(obj.id) === null) { //Kirjasto ei ole vielä suosikki, lisätään se suosikiksi
@@ -38,7 +37,6 @@ function addFavorite(id) {
                 description: obj.description
             }
             kirjasto = JSON.stringify(kirjasto);
-            console.log(kirjasto);
             localStorage.setItem(obj.id, kirjasto);
             if (localStorage.getItem("Lisatyt") === null) {
                 localStorage.setItem("Lisatyt", obj.id);
@@ -70,10 +68,6 @@ function addFavorite(id) {
             }
         }
     });
-}
-
-function naytaLocalStorate() {
-    console.log(localStorage.getItem("Lisatyt"));
 }
 
 function haeSuosikit(){
