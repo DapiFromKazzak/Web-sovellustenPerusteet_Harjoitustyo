@@ -1,5 +1,6 @@
 function haeKirjastoja() {
     if ($("#haku").val().length > 1) {
+        //Tyhjennetään aluksi hakutulokset
         $("#main").empty();
         url = 'https://api.kirjastot.fi/v4/library?name=' + $("#haku").val();
 
@@ -8,10 +9,12 @@ function haeKirjastoja() {
             $("#searchResult").empty();
             for (let i = 0; i < data.items.length; i++) {
                 obj = data.items[i];
+                //Selvitetään, onko kirjasto suosikeissa ja valitaan oikea tähti kortille
                 let favKuva = "./img/star.png";
                 if(localStorage.getItem(obj.id) === null){
                     favKuva = "./img/empty-star.png";
                 }
+                //Luodaan elementti, johon kirjaston tiedot sijoitetaan
                 let elem = '<article onclick="addFavorite(\'' + obj.id + '\')"><div><img class="kirjastoKuva" src="' + obj.coverPhoto.medium.url + '"><img id="favoriteImage_'+obj.id+'" class="favoriteImage" src="'+favKuva+'"> <h3>' + obj.name + '</h3><p>' + obj.address.street + ', ' + obj.address.zipcode + ' ' + obj.address.city + '</p></div></article>';
                 $("#main").append(elem);
             }
@@ -20,8 +23,8 @@ function haeKirjastoja() {
     } else{
         $("#main").empty();
     }
-
 }
+
 function addFavorite(id) {
     url = 'https://api.kirjastot.fi/v4/library?id=' + id;
     $.get(url, function (data, status) {
@@ -33,10 +36,11 @@ function addFavorite(id) {
             let kirjasto = {
                 name: obj.name,
                 address: obj.address.street + ', ' + obj.address.zipcode + ' ' + obj.address.city,
-                image: obj.coverPhoto.small.url,
+                image: obj.coverPhoto.medium.url,
                 description: obj.description
             }
-
+            kirjasto = JSON.stringify(kirjasto);
+            console.log(kirjasto);
             localStorage.setItem(obj.id, kirjasto);
             if (localStorage.getItem("Lisatyt") === null) {
                 localStorage.setItem("Lisatyt", obj.id);
@@ -67,12 +71,11 @@ function addFavorite(id) {
                 localStorage.clear();
             }
         }
-
     });
 }
+
 function naytaLocalStorate() {
     console.log(localStorage.getItem("Lisatyt"));
-    //localStorage.clear();
 }
 
 function haeSuosikit(){
@@ -82,19 +85,16 @@ function haeSuosikit(){
     }
     else {
         $("#main").empty();
+        //Otetaan tallennetut suosikit talteen local storagesta
         let suosikit = localStorage.getItem("Lisatyt").split(",");
         for (let i = 0; i < suosikit.length; i++) {
-            url = 'https://api.kirjastot.fi/v4/library?id=' + suosikit[i];
-            $.get(url, function (data, status) {
-                obj = data.items[0];
-                let favKuva = "./img/star.png";
-                if(localStorage.getItem(obj.id) === null){
-                    favKuva = "./img/empty-star.png";
-                }
-                let elem = '<article onclick="addFavorite(\'' + obj.id + '\')"><div><img class="kirjastoKuva" src="' + obj.coverPhoto.medium.url + '"><img id="favoriteImage_'+obj.id+'" class="favoriteImage" src="'+favKuva+'"> <h3>' + obj.name + '</h3><p>' + obj.address.street + ', ' + obj.address.zipcode + ' ' + obj.address.city + '</p></div></article>';
-                $("#main").append(elem);
-            });
+            //kaivetaan tallennetut tiedot localstoragesta helpommin käytettävään muuttujaan
+            let suosikki = JSON.parse(localStorage.getItem(suosikit[i]));
+
+            let favKuva = "./img/star.png"; //Kaikki kirjastot ovat suosikkeja, voidaan suoraan näyttää suosikki-tähti
+            //Luodaan elementti kirjaston tiedoista ja piirretään se main elementtiin
+            let elem = '<article onclick="addFavorite(\'' + suosikit[i] + '\')"><div><img class="kirjastoKuva" src="' + suosikki.image + '"><img id="favoriteImage_'+suosikit[i]+'" class="favoriteImage" src="'+favKuva+'"> <h3 style="margin-left:5px;">' + suosikki.name + '</h3><p style="margin-left:5px;">' + suosikki.address+ '</p><br /><div class="description">' + suosikki.description+ '</div></div></article>';
+            $("#main").append(elem);
         }
     }
-    
 }
