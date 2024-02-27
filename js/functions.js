@@ -7,7 +7,6 @@ function haeKirjastoja() {
         $.get(url, function (data, status) {
             for (let i = 0; i < data.items.length; i++) {
                 let obj = data.items[i];
-                console.log(data);
                 //Selvitetään, onko kirjasto suosikeissa ja valitaan oikea tähti kortille
                 let favKuva = "./img/star.png";
                 if(localStorage.getItem(obj.id) === null){
