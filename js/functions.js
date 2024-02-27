@@ -17,6 +17,8 @@ function haeKirjastoja() {
             }
 
         });
+    } else{
+        $("#main").empty();
     }
 
 }
