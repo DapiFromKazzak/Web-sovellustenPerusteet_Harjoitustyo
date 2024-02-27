@@ -7,13 +7,21 @@ function haeKirjastoja() {
         $.get(url, function (data, status) {
             for (let i = 0; i < data.items.length; i++) {
                 let obj = data.items[i];
+                console.log(data);
                 //Selvitetään, onko kirjasto suosikeissa ja valitaan oikea tähti kortille
                 let favKuva = "./img/star.png";
                 if(localStorage.getItem(obj.id) === null){
                     favKuva = "./img/empty-star.png";
                 }
                 //Luodaan elementti, johon kirjaston tiedot sijoitetaan
-                let elem = '<article onclick="addFavorite(\'' + obj.id + '\')"><div><img class="kirjastoKuva" src="' + obj.coverPhoto.medium.url + '"><img id="favoriteImage_'+obj.id+'" class="favoriteImage" src="'+favKuva+'"> <h3>' + obj.name + '</h3><p>' + obj.address.street + ', ' + obj.address.zipcode + ' ' + obj.address.city + '</p></div></article>';
+                let picture = "";
+                if(obj.coverPhoto === null){
+                    picture = "./img/Library_building_clipart.svg";
+                }
+                else{
+                    picture = obj.coverPhoto.medium.url;
+                }
+                let elem = '<article onclick="addFavorite(\'' + obj.id + '\')"><div><img class="kirjastoKuva" src="' + picture + '"><img id="favoriteImage_'+obj.id+'" class="favoriteImage" src="'+favKuva+'"> <h3>' + obj.name + '</h3><p>' + obj.address.street + ', ' + obj.address.zipcode + ' ' + obj.address.city + '</p></div></article>';
                 $("#main").append(elem);
             }
 
@@ -30,11 +38,27 @@ function addFavorite(id) {
 
         if (localStorage.getItem(obj.id) === null) { //Kirjasto ei ole vielä suosikki, lisätään se suosikiksi
             $("#favoriteImage_"+obj.id).attr('src', './img/star.png');
+
+            let picture = "";
+            if(obj.coverPhoto === null){
+                picture = "./img/Library_building_clipart.svg";
+            }
+            else{
+                picture = obj.coverPhoto.medium.url;
+            }
+            let kuvaus = "";
+            if(obj.description === null){
+                kuvaus = "";
+            }
+            else{
+                kuvaus = obj.description;
+            }
+
             let kirjasto = {
                 name: obj.name,
                 address: obj.address.street + ', ' + obj.address.zipcode + ' ' + obj.address.city,
-                image: obj.coverPhoto.medium.url,
-                description: obj.description
+                image: picture,
+                description: kuvaus
             }
             kirjasto = JSON.stringify(kirjasto);
             localStorage.setItem(obj.id, kirjasto);
