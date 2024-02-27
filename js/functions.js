@@ -5,10 +5,8 @@ function haeKirjastoja() {
         url = 'https://api.kirjastot.fi/v4/library?name=' + $("#haku").val();
 
         $.get(url, function (data, status) {
-            console.log(data.items);
-            $("#searchResult").empty();
             for (let i = 0; i < data.items.length; i++) {
-                obj = data.items[i];
+                let obj = data.items[i];
                 //Selvitetään, onko kirjasto suosikeissa ja valitaan oikea tähti kortille
                 let favKuva = "./img/star.png";
                 if(localStorage.getItem(obj.id) === null){
